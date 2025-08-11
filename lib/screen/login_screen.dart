@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'signup_screen.dart';
+import 'dashboard_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -179,20 +180,41 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    // TODO: Implement actual login logic
+    // TODO: Implement actual login logic with backend API
     print('Email: ${_emailController.text}');
     print('Password: ${_passwordController.text}');
 
-    // Show success message
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Login successful!'),
-        backgroundColor: Colors.green,
-      ),
+    // Show loading indicator
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Center(
+          child: CircularProgressIndicator(color: Color(0xFF2196F3)),
+        );
+      },
     );
 
-    // Show success dialog
-    _showSuccessDialog();
+    // Simulate API call delay
+    Future.delayed(Duration(seconds: 1), () {
+      Navigator.of(context).pop(); // Close loading dialog
+
+      // Navigate to Dashboard and clear all previous routes
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => DashboardScreen()),
+        (route) => false,
+      );
+
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Welcome back to Syllabuz!'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 2),
+        ),
+      );
+    });
   }
 
   void _handleForgotPassword() {
@@ -227,6 +249,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             ElevatedButton(
               onPressed: () {
+                // TODO: Implement actual password reset logic
                 Navigator.of(context).pop();
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -242,35 +265,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 'Send Reset Link',
                 style: TextStyle(color: Colors.white),
               ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showSuccessDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Welcome to Syllabuz!'),
-          content: Text('You have successfully logged in.'),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                // Navigate back to splash or home
-                Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  '/',
-                  (route) => false,
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF2196F3),
-              ),
-              child: Text('Continue', style: TextStyle(color: Colors.white)),
             ),
           ],
         );
