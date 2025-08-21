@@ -68,14 +68,60 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<void> logout() async {
+  // 🚀 FIXED: Proper logout with navigation
+  Future<void> logout(BuildContext context) async {
     try {
       _setLoading(true);
-      await AuthService.logout();
+      _setError(null);
+
+      // Call logout service (with timeout protection)
+      await AuthService.logout().timeout(
+        Duration(seconds: 5),
+        onTimeout: () {
+          print('Logout API timeout, but continuing with local logout...');
+        },
+      );
+
+      // Clear user data
       _user = null;
-      _setLoading(false);
     } catch (e) {
-      _setError(e.toString());
+      print('Logout error: $e (but continuing with local logout)');
+      _setError(null); // Don't show error to user for logout
+    } finally {
+      // ALWAYS clear loading state and navigate
+      _setLoading(false);
+
+      // Navigate to login screen
+      if (context.mounted) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/login', // Make sure this route exists
+          (route) => false,
+        );
+      }
+    }
+  }
+
+  // 🚀 ALTERNATIVE: Logout without navigation (for custom handling)
+  Future<bool> logoutWithoutNavigation() async {
+    try {
+      _setLoading(true);
+      _setError(null);
+
+      await AuthService.logout().timeout(
+        Duration(seconds: 5),
+        onTimeout: () {
+          print('Logout API timeout, but continuing...');
+        },
+      );
+
+      _user = null;
+      return true;
+    } catch (e) {
+      print('Logout error: $e');
+      _setError(null); // Don't show error for logout
+      return true; // Still return success for local logout
+    } finally {
       _setLoading(false);
     }
   }

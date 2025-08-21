@@ -5,6 +5,10 @@ import 'services/storage_service.dart';
 import 'providers/auth_provider.dart';
 import 'providers/dashboard_provider.dart';
 import 'providers/syllabus_provider.dart';
+import 'providers/task_provider.dart';
+import 'providers/logbook_provider.dart';
+import 'providers/feedback_provider.dart';
+import 'providers/certificate_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,6 +29,10 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => DashboardProvider()),
         ChangeNotifierProvider(create: (_) => SyllabusProvider()),
+        ChangeNotifierProvider(create: (_) => TaskProvider()),
+        ChangeNotifierProvider(create: (_) => LogbookProvider()),
+        ChangeNotifierProvider(create: (_) => FeedbackProvider()),
+        ChangeNotifierProvider(create: (_) => CertificateProvider()),
       ],
 
       child: MaterialApp(

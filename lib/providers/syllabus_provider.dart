@@ -67,7 +67,26 @@ class SyllabusProvider with ChangeNotifier {
     }
 
     final userProgress = progress[0];
-    return userProgress['status'] ?? 'not_started';
+
+    // ✅ SMART LOGIC: Check actual completion progress
+    final videoWatched = userProgress['video_watched'] == true;
+    final pdfRead = userProgress['pdf_read'] == true;
+    final quizCompleted = userProgress['quiz_completed'] == true;
+
+    // Count completed activities
+    int completedActivities = 0;
+    if (videoWatched) completedActivities++;
+    if (pdfRead) completedActivities++;
+    if (quizCompleted) completedActivities++;
+
+    // ✅ IMPROVED STATUS LOGIC:
+    if (completedActivities == 3) {
+      return 'completed'; // All activities done
+    } else if (completedActivities > 0) {
+      return 'in_progress'; // Some activities done (like your 33% case)
+    } else {
+      return 'not_started'; // No activities done
+    }
   }
 
   double getWeekProgress(Map<String, dynamic> week) {

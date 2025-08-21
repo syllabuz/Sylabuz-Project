@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:syllabuz_front/screen/logbook_screen.dart';
 import '../providers/dashboard_provider.dart';
 import '../providers/auth_provider.dart';
 import 'syllabus_screen.dart';
 import 'login_screen.dart';
 import 'signup_screen.dart';
+import 'task_screen.dart';
+import 'feedback_screen.dart';
+import 'certificate_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   @override
@@ -20,7 +24,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     super.initState();
     // Load dashboard data when screen initializes
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<DashboardProvider>(context, listen: false).loadDashboardData();
+      Provider.of<DashboardProvider>(
+        context,
+        listen: false,
+      ).loadDashboardData();
     });
   }
 
@@ -36,17 +43,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SpinKitThreeBounce(
-                      color: Color(0xFF2196F3),
-                      size: 30,
-                    ),
+                    SpinKitThreeBounce(color: Color(0xFF2196F3), size: 30),
                     SizedBox(height: 16),
                     Text(
                       'Loading dashboard...',
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 16,
-                      ),
+                      style: TextStyle(color: Colors.grey[600], fontSize: 16),
                     ),
                   ],
                 ),
@@ -58,11 +59,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.error_outline,
-                      color: Colors.red[400],
-                      size: 64,
-                    ),
+                    Icon(Icons.error_outline, color: Colors.red[400], size: 64),
                     SizedBox(height: 16),
                     Text(
                       'Oops! Something went wrong',
@@ -76,10 +73,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     Text(
                       dashboardProvider.error!,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 14,
-                      ),
+                      style: TextStyle(color: Colors.grey[600], fontSize: 14),
                     ),
                     SizedBox(height: 24),
                     ElevatedButton(
@@ -177,11 +171,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     color: Colors.white.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Icon(
-                    Icons.logout,
-                    color: Colors.white,
-                    size: 20,
-                  ),
+                  child: Icon(Icons.logout, color: Colors.white, size: 20),
                 ),
               ),
             ],
@@ -212,10 +202,43 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Widget _buildProgressCard(DashboardProvider provider) {
     final progress = provider.overallProgress / 100;
-    final completedTasks = provider.recentTasks.where((task) => 
-      task['status'] == 'completed' || task['status'] == 'reviewed'
-    ).length;
+
+    // ✅ Use actual syllabus weeks data (dynamic from backend)
+    final completedWeeks = provider.completedWeeksCount;
+    final totalWeeks = provider.totalWeeksCount;
+
+    // ✅ Fix task status detection - include all submitted statuses
+    final completedTasks =
+        provider.recentTasks.where((task) {
+          if (task['status'] == null) return false;
+
+          String status = task['status'].toString().toLowerCase();
+
+          // All possible completion/submission statuses
+          List<String> completedStatuses = [
+            'completed',
+            'reviewed',
+            'submitted',
+            'done',
+            'finished',
+            'approved',
+            'graded',
+            'passed',
+          ];
+
+          return completedStatuses.contains(status);
+        }).length;
+
     final totalTasks = provider.recentTasks.length;
+
+    // 🔍 Debug logging
+    print('📊 PROGRESS CARD DATA:');
+    print('   - Syllabus weeks: $completedWeeks/$totalWeeks completed');
+    print('   - Recent tasks: $completedTasks/$totalTasks completed');
+    print('   - Overall progress: ${provider.overallProgress}%');
+    print(
+      '   - Task statuses: ${provider.recentTasks.map((t) => t['status']).toList()}',
+    );
 
     return Container(
       padding: EdgeInsets.all(20),
@@ -245,8 +268,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   color: Colors.black87,
                 ),
               ),
+              // ✅ Show actual week progress (dynamic from database)
               Text(
-                provider.currentWeek,
+                '$completedWeeks of $totalWeeks',
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.grey[600],
@@ -256,11 +280,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ],
           ),
           SizedBox(height: 12),
+
           Text(
             '$completedTasks of $totalTasks recent tasks completed',
             style: TextStyle(fontSize: 14, color: Colors.grey[600]),
           ),
           SizedBox(height: 12),
+
           LinearProgressIndicator(
             value: progress.isNaN ? 0.0 : progress,
             backgroundColor: Colors.grey[200],
@@ -268,6 +294,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             minHeight: 8,
           ),
           SizedBox(height: 8),
+
           Text(
             '${(provider.overallProgress).toStringAsFixed(1)}% Complete',
             style: TextStyle(
@@ -296,8 +323,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
           subtitle: '${provider.pendingTasks} pending',
           color: Color(0xFFFF9800),
           onTap: () {
-            // Navigate to Tasks screen
-            print('Navigate to Tasks');
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => TaskScreen()),
+            );
           },
         ),
         _buildMenuCard(
@@ -318,8 +347,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
           subtitle: 'Daily entries',
           color: Color(0xFF9C27B0),
           onTap: () {
-            // Navigate to Logbook screen
-            print('Navigate to Logbook');
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => LogbookScreen()),
+            );
           },
         ),
         _buildMenuCard(
@@ -328,8 +359,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
           subtitle: '${provider.recentFeedback.length} feedback',
           color: Color(0xFF00BCD4),
           onTap: () {
-            // Navigate to Feedback screen
-            print('Navigate to Feedback');
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => FeedbackScreen()),
+            );
+          },
+        ),
+        _buildMenuCard(
+          icon: Icons.card_membership_rounded,
+          title:
+              'Certificates', // ← Fixed typo: "Cerificates" to "Certificates"
+          subtitle:
+              'Download certificates', // ← Fixed: Changed from feedback to certificates
+          color: Color(
+            0xFFFFD700,
+          ), // ← Changed to gold color (more appropriate for certificates)
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => CertificateScreen()),
+            );
           },
         ),
       ],
@@ -419,43 +468,45 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
             ],
           ),
-          child: activities.isEmpty
-              ? Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(20),
-                    child: Column(
-                      children: [
-                        Icon(
-                          Icons.assignment_outlined,
-                          size: 48,
-                          color: Colors.grey[400],
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          'No recent tasks',
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: 16,
+          child:
+              activities.isEmpty
+                  ? Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(20),
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.assignment_outlined,
+                            size: 48,
+                            color: Colors.grey[400],
                           ),
-                        ),
-                      ],
+                          SizedBox(height: 8),
+                          Text(
+                            'No recent tasks',
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
+                  )
+                  : Column(
+                    children:
+                        activities.asMap().entries.map((entry) {
+                          final index = entry.key;
+                          final task = entry.value;
+
+                          return Column(
+                            children: [
+                              _buildTaskItem(task),
+                              if (index < activities.length - 1)
+                                Divider(height: 24),
+                            ],
+                          );
+                        }).toList(),
                   ),
-                )
-              : Column(
-                  children: activities.asMap().entries.map((entry) {
-                    final index = entry.key;
-                    final task = entry.value;
-                    
-                    return Column(
-                      children: [
-                        _buildTaskItem(task),
-                        if (index < activities.length - 1) 
-                          Divider(height: 24),
-                      ],
-                    );
-                  }).toList(),
-                ),
         ),
       ],
     );
@@ -546,12 +597,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   String _formatDate(String? dateString) {
     if (dateString == null) return 'Unknown';
-    
+
     try {
       final date = DateTime.parse(dateString);
       final now = DateTime.now();
       final difference = now.difference(date);
-      
+
       if (difference.inDays > 0) {
         return '${difference.inDays}d ago';
       } else if (difference.inHours > 0) {
@@ -585,7 +636,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           setState(() {
             _currentIndex = index;
           });
-          
+
           // Handle navigation
           switch (index) {
             case 1: // Syllabus
@@ -630,44 +681,46 @@ class _DashboardScreenState extends State<DashboardScreen> {
           content: Text('Are you sure you want to logout?'),
           actions: [
             TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+              onPressed: () => Navigator.of(context).pop(),
               child: Text('Cancel'),
             ),
             ElevatedButton(
               onPressed: () async {
-                Navigator.of(context).pop();
-                
+                Navigator.of(context).pop(); // Close dialog
+
                 // Show loading
                 showDialog(
                   context: context,
                   barrierDismissible: false,
-                  builder: (context) => Center(
-                    child: SpinKitThreeBounce(
-                      color: Color(0xFF2196F3),
-                      size: 30,
-                    ),
-                  ),
+                  builder:
+                      (context) => Center(
+                        child: SpinKitThreeBounce(
+                          color: Color(0xFF2196F3),
+                          size: 30,
+                        ),
+                      ),
                 );
-                
-                // Logout
-                await Provider.of<AuthProvider>(context, listen: false).logout();
-                
-                // Navigate to login
+
+                // Logout with timeout
+                try {
+                  await Provider.of<AuthProvider>(
+                    context,
+                    listen: false,
+                  ).logoutWithoutNavigation().timeout(Duration(seconds: 5));
+                } catch (e) {
+                  print('Logout timeout/error: $e');
+                }
+
+                // Always dismiss loading and navigate
+                Navigator.of(context).pop(); // Dismiss loading
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(builder: (context) => LoginScreen()),
                   (route) => false,
                 );
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-              ),
-              child: Text(
-                'Logout',
-                style: TextStyle(color: Colors.white),
-              ),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+              child: Text('Logout', style: TextStyle(color: Colors.white)),
             ),
           ],
         );

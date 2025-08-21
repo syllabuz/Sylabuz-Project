@@ -4,6 +4,8 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../providers/syllabus_provider.dart';
 import 'syllabus_extend_screen.dart';
 import 'dashboard_screen.dart';
+import 'logbook_screen.dart';
+import 'task_screen.dart';
 
 class SyllabusScreen extends StatefulWidget {
   @override
@@ -377,9 +379,33 @@ class _SyllabusScreenState extends State<SyllabusScreen> {
             },
             child: _buildBottomNavItem(Icons.home, 'Dashboard', false),
           ),
-          _buildBottomNavItem(Icons.book, 'Syllabus', true),
-          _buildBottomNavItem(Icons.assignment, 'Tasks', false),
-          _buildBottomNavItem(Icons.book_outlined, 'Logbook', false),
+          GestureDetector(
+            onTap: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => SyllabusScreen()),
+              );
+            },
+            child: _buildBottomNavItem(Icons.book, 'Syllabus', true),
+          ),
+          GestureDetector(
+            onTap: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => TaskScreen()),
+              );
+            },
+            child: _buildBottomNavItem(Icons.assignment, 'Tasks', false),
+          ),
+          GestureDetector(
+            onTap: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => LogbookScreen()),
+              );
+            },
+            child: _buildBottomNavItem(Icons.book_outlined, 'Logbook', false),
+          ),
         ],
       ),
     );
