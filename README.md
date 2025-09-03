@@ -7,7 +7,7 @@ Tahun 2025
 
 ## README Frontend (Flutter)
 
-```markdown
+``
 # Syllabuz - Intern App (Frontend)
 
 Aplikasi **Syllabuz** dikembangkan sebagai proyek magang di **Dinas Lingkungan Hidup**.  
@@ -40,9 +40,7 @@ Intern menggunakan aplikasi ini untuk:
 ## Teknologi
 - Flutter 3.x  
 - Dart  
-- Provider / Riverpod (state management)  
-- HTTP/Dio (API Communication)  
-- SharedPreferences (local storage)  
+
 
 ---
 
