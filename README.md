@@ -1,16 +1,48 @@
-# syllabuz_front
+Author
 
-A new Flutter project.
+Milcky
+Developer / Intern @ Dinas Lingkungan Hidup
+Tahun 2025
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
+## README Frontend (Flutter)
 
-A few resources to get you started if this is your first Flutter project:
+```markdown
+# Syllabuz - Intern App (Frontend)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Aplikasi **Syllabuz** dikembangkan sebagai proyek magang di **Dinas Lingkungan Hidup**.  
+Bagian ini merupakan **Frontend Mobile App** yang digunakan oleh intern.  
+Dibangun menggunakan **Flutter**.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+---
+
+## Deskripsi
+Intern menggunakan aplikasi ini untuk:
+- Mengakses program dan syllabus week  
+- Menonton video pembelajaran mingguan  
+- Membaca materi PDF  
+- Mengerjakan quiz  
+- Mengerjakan task dari mentor  
+- Mengisi logbook kegiatan harian  
+- Menerima feedback dari mentor  
+
+---
+
+## Fitur
+- Syllabus Week (Video, PDF, Quiz)  
+- Task dari Mentor  
+- Feedback dari Mentor  
+- Logbook Harian Intern  
+- Notifikasi update materi/tugas  
+
+---
+
+## Teknologi
+- Flutter 3.x  
+- Dart  
+- Provider / Riverpod (state management)  
+- HTTP/Dio (API Communication)  
+- SharedPreferences (local storage)  
+
+---
+
